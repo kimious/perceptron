@@ -2,36 +2,27 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from perceptron import Perceptron
 
+DATASET_URL = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
 
 if __name__ == '__main__':
-    training_data_features = np.array([
-        [10, 10], [20, 16], [30, 12], [40, 13], [50, 15], [60, 8], [70, 10], [80, 11],
-        [10, 40], [20, 44], [30, 50], [40, 52], [50, 60], [60, 55], [70, 41], [80, 57],
-    ])
+    df = pd.read_csv(DATASET_URL, header=None, encoding='utf-8')
+    inputs = df.iloc[:100, [0, 2]].values
+    labels = np.where(df.iloc[:100, 4].values == 'Iris-setosa', 1, 0)
 
-    training_data_classifications = np.array(
-        [
-            0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1,
-        ]
-    )
+    model = Perceptron()
+    model.fit(inputs, labels)
 
-    p = Perceptron()
-    p.fit(training_data_features, training_data_classifications)
-
-    test_data = np.array([
-        [10, 12], [10, 50],
-        [30, 16], [30, 60]
-    ])
-    test_results = p.predict(test_data)
+    test_data = np.array([[7, 4.2], [5, 1]])
+    test_results = model.predict(test_data)
 
     _, ax = plt.subplots()
     ax.scatter(
-        training_data_features[:, 0],
-        training_data_features[:, 1],
-        color=np.where(training_data_classifications == 0, 'orange', 'pink')
+        inputs[:, 0],
+        inputs[:, 1],
+        color=np.where(labels == 0, 'orange', 'pink')
     )
 
     ax.scatter(
